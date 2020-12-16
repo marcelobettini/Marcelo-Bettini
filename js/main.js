@@ -50,6 +50,50 @@ function getJSON() {
     });
 }
 
+//crea registro nuevo en el JSON original
+function writeJson() {
+fetch(url, {
+  method: "POST",  
+  body: JSON.stringify({
+    item: itemEl.value,
+    marca: marcaEl.value,
+    presentacion: presentacionEl.value,
+    precio: precioEl.value    
+}),
+headers: {"Content-Type": "application/JSON"}
+})
+.then(response => response.json())
+}
+//modifica registro existente en el JSON original
+function editJson(index) {
+  const slash = "/"
+  const id = productos[index].id
+  const combinedURL = url.concat(slash+id)
+fetch(combinedURL, {
+  method: "PUT",  
+  body: JSON.stringify({
+    item: itemEl.value,
+    marca: marcaEl.value,
+    presentacion: presentacionEl.value,
+    precio: precioEl.value    
+}),
+headers: {"Content-Type": "application/JSON"}
+})
+.then(response => response.json())
+}
+//elimina registro del JSON original (esto solo funciona si se borra siempre el último registro)
+//obviamente, no es el comportamiento deseado, pero no logré descifrarlo
+function deleteJson(index) {
+  const slash = "/"
+  const id = productos[index].id
+  const combinedURL = url.concat(slash+id)
+fetch(combinedURL, {
+  method: "DELETE",    
+})
+.then(response => response.json())
+.then(json => console.log(json))
+}
+
 //crea controles de la tabla ("agregar" y filtros)
 function createTableCtrl() {
   //botón "agregar"
@@ -240,6 +284,7 @@ function buildTableRows(data) {
   btnDelete.addEventListener("click", () => {
     showModal();
     deleteItem(trEl.rowIndex);
+    deleteJson(trEl.rowIndex);
   });
 }
 
@@ -320,6 +365,7 @@ function addItem() {
       precioEl.value.length
     );
     if (flag) {
+      writeJson();
       progressBar();
       let id = productos.length + 1;
       let item = itemEl.value;
@@ -395,6 +441,7 @@ function editItem(index) {
       precioEl.value.length
     );
     if (flag) {
+      editJson(index);
       productos[index].item = itemEl.value;
       productos[index].marca = marcaEl.value;
       productos[index].presentacion = presentacionEl.value;
