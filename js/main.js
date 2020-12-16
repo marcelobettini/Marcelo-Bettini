@@ -53,8 +53,8 @@ function getJSON() {
 //crea controles de la tabla ("agregar" y filtros)
 function createTableCtrl() {
   //botón "agregar"
-  const ctrlDiv = document.createElement("div")
-  ctrlDiv.className="container-flex"
+  const ctrlDiv = document.createElement("div");
+  ctrlDiv.className = "container-flex";
   const addBtnEl = document.createElement("button");
   const addBtnTxt = document.createTextNode("AGREGAR");
   addBtnEl.classList.add("btn", "btn-success", "m-1");
@@ -67,7 +67,7 @@ function createTableCtrl() {
   const switchEl = document.createElement("input");
   switchEl.type = "checkbox";
   switchEl.id = "toggleSwitch";
-  switchEl.className = "switch"
+  switchEl.className = "switch";
   tableCtrl.appendChild(switchEl);
   switchEl.addEventListener("change", function () {
     if (this.checked == true) {      
@@ -76,6 +76,7 @@ function createTableCtrl() {
       selectEl.classList.add("d-none");
     }
   });
+
   //filtros
   selectEl.name = "filter";
   selectEl.id = "filter";
@@ -89,6 +90,7 @@ function createTableCtrl() {
   optionB.textContent = "Filtrar por precio máximo";
   selectEl.appendChild(optionB);
   tableCtrl.appendChild(selectEl);
+
   //input para filtrar por precio máximo
   const inputEl = document.createElement("input");
   inputEl.id = "inputEl";
@@ -138,14 +140,14 @@ function filterData() {
     tableContainer.appendChild(tableEl);
     hideCtrl();
     buildTable(productosPorPrecio);
-    removeTableBtn(productosPorPrecio);
-    addTableCloseBtn(productosPorPrecio);
+    removeTableBtn();
+    addTableCloseBtn();
   }
   inputEl.value = "";
 }
 
 //elimina los botones Editar y Agregar de la tabla
-function removeTableBtn(data) {
+function removeTableBtn() {
   let tableButtons = Array.from(document.getElementsByClassName("btn"));
   tableButtons.splice(0, 5);
   tableButtons.forEach(function (e) {
@@ -154,7 +156,7 @@ function removeTableBtn(data) {
 }
 
 //agrega el botón para cerrar la tabla filtrada
-function addTableCloseBtn(data) {
+function addTableCloseBtn() {
   const closeBtn = document.createElement("button");
   const closeBtnTxt = document.createTextNode("VOLVER");
   closeBtn.classList.add("btn", "btn-primary", "btn-lg");
@@ -171,7 +173,7 @@ function addTableCloseBtn(data) {
     tableEl = document.createElement("table");
     tableEl.classList.add("table", "table-dark", "mt-5", "py-1");
     tableEl.id = "table";
-    tableContainer.appendChild(tableEl);    
+    tableContainer.appendChild(tableEl);
     resetFilter();
     showCtrl();
     buildTable(productos);
@@ -186,7 +188,7 @@ function resetFilter() {
   filterBtn.classList.add("d-none");
   cancelFilterBtn.classList.add("d-none");
   addBtnEl.classList.remove("d-none");
-  selectEl.classList.add("d-none")
+  selectEl.classList.add("d-none");
   selectEl.disabled = false;
 }
 
@@ -228,7 +230,7 @@ function buildTableRows(data) {
   trEl.appendChild(btnEdit);
   btnEdit.addEventListener("click", () => {
     showModal();
-    editItem(trEl, trEl.rowIndex);
+    editItem(trEl.rowIndex);
   });
   const btnDelete = document.createElement("button"); //agrega btn borrar y su handler
   const txtDelete = document.createTextNode("Borrar");
@@ -243,10 +245,10 @@ function buildTableRows(data) {
 
 //borra datos residuales de los inputs
 function resetFields() {
-  itemEl.value = " ";
-  marcaEl.value = " ";
-  presentacionEl.value = " ";
-  precioEl.value = " ";
+  itemEl.value = "";
+  marcaEl.value = "";
+  presentacionEl.value = "";
+  precioEl.value = "";
 }
 
 //oculta los controles "agregar" y "filtro"
@@ -259,7 +261,7 @@ function showCtrl() {
   tableCtrl.classList.remove("d-none");
 }
 //muestra el modal
-function showModal() {  
+function showModal() {
   progressContainerEl.classList.add("d-none");
   modalEl.classList.remove("d-none");
 }
@@ -290,6 +292,14 @@ function progressBar() {
   }
 }
 
+//valida que haya datos ingresados en cada campo
+function inputEmptyCheck(a, b, c, d) {  
+  if (a == 0 || b == 0 || c == 0 || d == 0) {
+    return false;
+  } else {
+    return true;
+  }
+}
 //agrega un registro
 function addItem() {
   itemEl.disabled = false;
@@ -297,28 +307,39 @@ function addItem() {
   presentacionEl.disabled = false;
   precioEl.disabled = false;
   resetFields();
-  showModal();  
+  showModal();
   let cancelEv = () => {
     hideModal();
-    okEl.removeEventListener("click", okEv, { once: true });    
+    okEl.removeEventListener("click", okEv, { once: true });
   };
-  let okEv = () => {        
-    progressBar();
-    let id = productos.length + 1;
-    let item = itemEl.value;
-    let marca = marcaEl.value;
-    let presentacion = presentacionEl.value;
-    let precio = precioEl.value;
-    let newItem = { id, item, marca, presentacion, precio };
-    productos.push(newItem);
-    //elimino la tabla y vuelvo a crearla con datos actualizados puesto que el array cambió
-    tableEl.remove();
-    tableEl = document.createElement("table");
-    tableEl.classList.add("table", "table-dark", "mt-5", "py-1");
-    tableEl.id = "table";
-    tableContainer.appendChild(tableEl);
-    buildTable(productos);
-    cancelEl.removeEventListener("click", cancelEv, { once: true });
+  let okEv = () => {
+    let flag = inputEmptyCheck(
+      itemEl.value.length,
+      marcaEl.value.length,
+      presentacionEl.value.length,
+      precioEl.value.length
+    );
+    if (flag) {
+      progressBar();
+      let id = productos.length + 1;
+      let item = itemEl.value;
+      let marca = marcaEl.value;
+      let presentacion = presentacionEl.value;
+      let precio = precioEl.value;
+      let newItem = { id, item, marca, presentacion, precio };
+      productos.push(newItem);
+      //elimino la tabla y vuelvo a crearla con datos actualizados puesto que el array cambió
+      tableEl.remove();
+      tableEl = document.createElement("table");
+      tableEl.classList.add("table", "table-dark", "mt-5", "py-1");
+      tableEl.id = "table";
+      tableContainer.appendChild(tableEl);
+      buildTable(productos);
+      cancelEl.removeEventListener("click", cancelEv, { once: true });
+    } else {
+      alert("No deje campos vacíos");
+      okEl.addEventListener("click", okEv, { once: true });
+    }
   };
   cancelEl.addEventListener("click", cancelEv, { once: true });
   okEl.addEventListener("click", okEv, { once: true });
@@ -353,7 +374,7 @@ function deleteItem(index) {
 //usaran la misma función para cargar el dato y luego se bifurcara solo la decisión final -editar o eliminar-)
 //por qué no lo hice? Porque temí no llegar a tiempo ya que eso debería haberlo planificado antes
 //de largarme a programar.
-function editItem(trEl, index) {
+function editItem(index) {
   itemEl.value = productos[index].item;
   marcaEl.value = productos[index].marca;
   presentacionEl.value = productos[index].presentacion;
@@ -367,22 +388,31 @@ function editItem(trEl, index) {
     okEl.removeEventListener("click", okEv, { once: true });
   };
   let okEv = () => {
-    productos[index].item = itemEl.value;
-    productos[index].marca = marcaEl.value;
-    productos[index].presentacion = presentacionEl.value;
-    productos[index].precio = precioEl.value;
-    tableEl.remove(); //elimino la tabla y vuelvo a crearla con datos actualizados
-    tableEl = document.createElement("table");
-    tableEl.classList.add("table", "table-dark", "mt-5", "py-1");
-    tableEl.id = "table";
-    tableContainer.appendChild(tableEl);
-    buildTable(productos);
-    progressBar();
-    cancelEl.removeEventListener("click", cancelEv, { once: true });
+    let flag = inputEmptyCheck(
+      itemEl.value.length,
+      marcaEl.value.length,
+      presentacionEl.value.length,
+      precioEl.value.length
+    );
+    if (flag) {
+      productos[index].item = itemEl.value;
+      productos[index].marca = marcaEl.value;
+      productos[index].presentacion = presentacionEl.value;
+      productos[index].precio = precioEl.value;
+      tableEl.remove(); //elimino la tabla y vuelvo a crearla con datos actualizados
+      tableEl = document.createElement("table");
+      tableEl.classList.add("table", "table-dark", "mt-5", "py-1");
+      tableEl.id = "table";
+      tableContainer.appendChild(tableEl);
+      buildTable(productos);
+      progressBar();
+      cancelEl.removeEventListener("click", cancelEv, { once: true });
+    } else {
+      alert("No deje campos vacíos");
+      okEl.addEventListener("click", okEv, { once: true });
+    }
   };
   cancelEl.addEventListener("click", cancelEv, { once: true });
   okEl.addEventListener("click", okEv, { once: true });
 }
-
-
 window.onload = getJSON();
