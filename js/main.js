@@ -345,7 +345,7 @@ function inputEmptyCheck(a, b, c, d) {
   }
 }
 //agrega un registro
-function addItem() {
+function addItem() {  
   itemEl.disabled = false;
   marcaEl.disabled = false;
   presentacionEl.disabled = false;
@@ -366,7 +366,7 @@ function addItem() {
     if (flag) {
       writeJson();
       progressBar();
-      let id = productos.length + 1;
+      let id = parseInt(productos[productos.length-1].id)+1;
       let item = itemEl.value;
       let marca = marcaEl.value;
       let presentacion = presentacionEl.value;
