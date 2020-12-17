@@ -172,7 +172,7 @@ function showFilterInput() {
 }
 function filterData() {
   let productosPorPrecio = productos.filter(function (e) {
-    return e.precio <= inputEl.value;
+    return e.precio <= parseFloat(inputEl.value);
   });
   if (productosPorPrecio.length == 0) {
     alert("no hay productos en el rango especificado");
