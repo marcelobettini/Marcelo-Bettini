@@ -81,8 +81,7 @@ headers: {"Content-Type": "application/JSON"}
 })
 .then(response => response.json())
 }
-//elimina registro del JSON original (esto solo funciona si se borra siempre el último registro)
-//obviamente, no es el comportamiento deseado, pero no logré descifrarlo
+//elimina registro del JSON original
 function deleteJson(index) {
   const slash = "/"
   const id = productos[index].id
