@@ -27,6 +27,7 @@ let itemEl = document.getElementById("item");
 let marcaEl = document.getElementById("marca");
 let presentacionEl = document.getElementById("presentacion");
 let precioEl = document.getElementById("precio");
+let stockEl = document.getElementById("stock")
 
 //variable de alcance global para manipular los datos que traigo con fetch
 //creo que hay una forma de evitar esta variable pero aún no domino scope como para
@@ -58,7 +59,8 @@ fetch(url, {
     item: itemEl.value,
     marca: marcaEl.value,
     presentacion: presentacionEl.value,
-    precio: precioEl.value    
+    precio: precioEl.value,
+    stock: stockEl.value
 }),
 headers: {"Content-Type": "application/JSON"}
 })
@@ -75,7 +77,8 @@ fetch(combinedURL, {
     item: itemEl.value,
     marca: marcaEl.value,
     presentacion: presentacionEl.value,
-    precio: precioEl.value    
+    precio: precioEl.value,
+    stock: stockEl.value
 }),
 headers: {"Content-Type": "application/JSON"}
 })
@@ -293,6 +296,7 @@ function resetFields() {
   marcaEl.value = "";
   presentacionEl.value = "";
   precioEl.value = "";
+  stockEl.value = "";
 }
 
 //oculta los controles "agregar" y "filtro"
@@ -337,8 +341,8 @@ function progressBar() {
 }
 
 //valida que haya datos ingresados en cada campo
-function inputEmptyCheck(a, b, c, d) {  
-  if (a == 0 || b == 0 || c == 0 || d == 0) {
+function inputEmptyCheck(a, b, c, d, e) {  
+  if (a == 0 || b == 0 || c == 0 || d == 0 || e == 0) {
     return false;
   } else {
     return true;
@@ -350,6 +354,7 @@ function addItem() {
   marcaEl.disabled = false;
   presentacionEl.disabled = false;
   precioEl.disabled = false;
+  stockEl.disabled = false;
   resetFields();
   showModal();
   let cancelEv = () => {
@@ -361,7 +366,8 @@ function addItem() {
       itemEl.value.length,
       marcaEl.value.length,
       presentacionEl.value.length,
-      precioEl.value.length
+      precioEl.value.length,
+      stockEl.value.length,
     );
     if (flag) {
       writeJson();
@@ -371,14 +377,15 @@ function addItem() {
       let marca = marcaEl.value;
       let presentacion = presentacionEl.value;
       let precio = precioEl.value;
-      let newItem = { id, item, marca, presentacion, precio };
+      let stock = stockEl.value;
+      let newItem = { id, item, marca, presentacion, precio, stock };
       productos.push(newItem);
       //elimino la tabla y vuelvo a crearla con datos actualizados puesto que el array cambió
       tableEl.remove();
       tableEl = document.createElement("table");
       tableEl.classList.add("table", "table-dark", "mt-5", "py-1");
       tableEl.id = "table";
-      tableContainer.appendChild(tableEl);
+      tableContainer.appendChild(tableEl);      
       buildTable(productos);
       cancelEl.removeEventListener("click", cancelEv, { once: true });
     } else {
@@ -396,10 +403,12 @@ function deleteItem(index) {
   marcaEl.value = productos[index].marca;
   presentacionEl.value = productos[index].presentacion;
   precioEl.value = `$ ${productos[index].precio}`;
+  stockEl.value = productos[index].stock;
   itemEl.disabled = true;
   marcaEl.disabled = true;
   presentacionEl.disabled = true;
   precioEl.disabled = true;
+  stockEl.disabled = true;
 
   let cancelEv = () => {
     hideModal();
@@ -424,10 +433,12 @@ function editItem(index) {
   marcaEl.value = productos[index].marca;
   presentacionEl.value = productos[index].presentacion;
   precioEl.value = productos[index].precio;
+  stockEl.value = productos[index].stock;
   itemEl.disabled = false;
   marcaEl.disabled = false;
   presentacionEl.disabled = false;
   precioEl.disabled = false;
+  stockEl.disabled = false;
   let cancelEv = () => {
     hideModal();
     okEl.removeEventListener("click", okEv, { once: true });
@@ -437,7 +448,8 @@ function editItem(index) {
       itemEl.value.length,
       marcaEl.value.length,
       presentacionEl.value.length,
-      precioEl.value.length
+      precioEl.value.length,
+      stockEl.value.length
     );
     if (flag) {
       editJson(index);
@@ -445,6 +457,7 @@ function editItem(index) {
       productos[index].marca = marcaEl.value;
       productos[index].presentacion = presentacionEl.value;
       productos[index].precio = precioEl.value;
+      productos[index].stock = stockEl.value;
       tableEl.remove(); //elimino la tabla y vuelvo a crearla con datos actualizados
       tableEl = document.createElement("table");
       tableEl.classList.add("table", "table-dark", "mt-5", "py-1");
