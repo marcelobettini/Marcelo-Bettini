@@ -59,8 +59,8 @@ fetch(url, {
     item: itemEl.value,
     marca: marcaEl.value,
     presentacion: presentacionEl.value,
-    precio: precioEl.value,
-    stock: stockEl.value
+    precio: Number(precioEl.value),
+    stock: Number(stockEl.value)
 }),
 headers: {"Content-Type": "application/JSON"}
 })
