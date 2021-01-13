@@ -27,7 +27,7 @@ let itemEl = document.getElementById("item");
 let marcaEl = document.getElementById("marca");
 let presentacionEl = document.getElementById("presentacion");
 let precioEl = document.getElementById("precio");
-let stockEl = document.getElementById("stock")
+let stockEl = document.getElementById("stock");
 
 //variable de alcance global para manipular los datos que traigo con fetch
 //creo que hay una forma de evitar esta variable pero aún no domino scope como para
@@ -53,47 +53,45 @@ function getJSON() {
 
 //crea registro nuevo en el JSON original
 function writeJson() {
-fetch(url, {
-  method: "POST",  
-  body: JSON.stringify({
-    item: itemEl.value,
-    marca: marcaEl.value,
-    presentacion: presentacionEl.value,
-    precio: Number(precioEl.value),
-    stock: Number(stockEl.value)
-}),
-headers: {"Content-Type": "application/JSON"}
-})
-.then(response => response.json())
+  fetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      item: itemEl.value,
+      marca: marcaEl.value,
+      presentacion: presentacionEl.value,
+      precio: Number(precioEl.value),
+      stock: Number(stockEl.value),
+    }),
+    headers: { "Content-Type": "application/JSON" },
+  }).then((response) => response.json());
 }
 //modifica registro existente en el JSON original
 function editJson(index) {
-  const slash = "/"
-  const id = productos[index].id
-  const combinedURL = url.concat(slash+id)
-fetch(combinedURL, {
-  method: "PUT",  
-  body: JSON.stringify({
-    item: itemEl.value,
-    marca: marcaEl.value,
-    presentacion: presentacionEl.value,
-    precio: precioEl.value,
-    stock: stockEl.value
-}),
-headers: {"Content-Type": "application/JSON"}
-})
-.then(response => response.json())
+  const slash = "/";
+  const id = productos[index].id;
+  const combinedURL = url.concat(slash + id);
+  fetch(combinedURL, {
+    method: "PUT",
+    body: JSON.stringify({
+      item: itemEl.value,
+      marca: marcaEl.value,
+      presentacion: presentacionEl.value,
+      precio: precioEl.value,
+      stock: stockEl.value,
+    }),
+    headers: { "Content-Type": "application/JSON" },
+  }).then((response) => response.json());
 }
 //elimina registro del JSON original
 function deleteJson(index) {
-  const slash = "/"
-  const id = productos[index].id
-  const combinedURL = url.concat(slash+id)
-fetch(combinedURL, {
-  method: "DELETE",    
-})
-.then(response => response.json())
-.then(json => console.log(json))
+  const slash = "/";
+  const id = productos[index].id;
+  const combinedURL = url.concat(slash + id);
+  fetch(combinedURL, {
+    method: "DELETE",
+  })
+    .then((response) => response.json())
+    .then((json) => console.log(json));
 }
 
 //crea controles de la tabla ("agregar" y filtros)
@@ -116,9 +114,9 @@ function createTableCtrl() {
   switchEl.className = "switch";
   tableCtrl.appendChild(switchEl);
   switchEl.addEventListener("change", function () {
-    if (this.checked == true) {      
+    if (this.checked == true) {
       selectEl.classList.remove("d-none");
-    } else {      
+    } else {
       selectEl.classList.add("d-none");
     }
   });
@@ -174,7 +172,7 @@ function showFilterInput() {
 }
 function filterData() {
   let productosPorPrecio = productos.filter(function (e) {
-    return e.precio <= inputEl.value;
+    return e.precio <= Number(inputEl.value);               //agregué Number() porque no filtraba cuatro cifras
   });
   if (productosPorPrecio.length == 0) {
     alert("no hay productos en el rango especificado");
@@ -341,7 +339,7 @@ function progressBar() {
 }
 
 //valida que haya datos ingresados en cada campo
-function inputEmptyCheck(a, b, c, d, e) {  
+function inputEmptyCheck(a, b, c, d, e) {
   if (a == 0 || b == 0 || c == 0 || d == 0 || e == 0) {
     return false;
   } else {
@@ -349,7 +347,7 @@ function inputEmptyCheck(a, b, c, d, e) {
   }
 }
 //agrega un registro
-function addItem() {  
+function addItem() {
   itemEl.disabled = false;
   marcaEl.disabled = false;
   presentacionEl.disabled = false;
@@ -367,12 +365,12 @@ function addItem() {
       marcaEl.value.length,
       presentacionEl.value.length,
       precioEl.value.length,
-      stockEl.value.length,
+      stockEl.value.length
     );
     if (flag) {
       writeJson();
       progressBar();
-      let id = parseInt(productos[productos.length-1].id)+1;
+      let id = parseInt(productos[productos.length - 1].id) + 1;
       let item = itemEl.value;
       let marca = marcaEl.value;
       let presentacion = presentacionEl.value;
@@ -385,7 +383,7 @@ function addItem() {
       tableEl = document.createElement("table");
       tableEl.classList.add("table", "table-dark", "mt-5", "py-1");
       tableEl.id = "table";
-      tableContainer.appendChild(tableEl);      
+      tableContainer.appendChild(tableEl);
       buildTable(productos);
       cancelEl.removeEventListener("click", cancelEv, { once: true });
     } else {
@@ -415,10 +413,12 @@ function deleteItem(index) {
     okEl.removeEventListener("click", okEv, { once: true });
   };
   let okEv = () => {
+    setTimeout(() => {
+      productos.splice(index, 1);
+      tableEl.deleteRow(index);
+      cancelEl.removeEventListener("click", cancelEv, { once: true });
+    }, 1500);
     progressBar();
-    productos.splice(index, 1);
-    tableEl.deleteRow(index);
-    cancelEl.removeEventListener("click", cancelEv, { once: true });
   };
   cancelEl.addEventListener("click", cancelEv, { once: true });
   okEl.addEventListener("click", okEv, { once: true });
@@ -453,19 +453,22 @@ function editItem(index) {
     );
     if (flag) {
       editJson(index);
-      productos[index].item = itemEl.value;
-      productos[index].marca = marcaEl.value;
-      productos[index].presentacion = presentacionEl.value;
-      productos[index].precio = precioEl.value;
-      productos[index].stock = stockEl.value;
-      tableEl.remove(); //elimino la tabla y vuelvo a crearla con datos actualizados
-      tableEl = document.createElement("table");
-      tableEl.classList.add("table", "table-dark", "mt-5", "py-1");
-      tableEl.id = "table";
-      tableContainer.appendChild(tableEl);
-      buildTable(productos);
+      setTimeout(() => {
+        productos[index].item = itemEl.value;
+        productos[index].marca = marcaEl.value;
+        productos[index].presentacion = presentacionEl.value;
+        productos[index].precio = precioEl.value;
+        productos[index].stock = stockEl.value;
+        tableEl.remove(); //elimino la tabla y vuelvo a crearla con datos actualizados
+        tableEl = document.createElement("table");
+        tableEl.classList.add("table", "table-dark", "mt-5", "py-1");
+        tableEl.id = "table";
+        tableContainer.appendChild(tableEl);
+        buildTable(productos);
+
+        cancelEl.removeEventListener("click", cancelEv, { once: true });
+      }, 1500);
       progressBar();
-      cancelEl.removeEventListener("click", cancelEv, { once: true });
     } else {
       alert("No deje campos vacíos");
       okEl.addEventListener("click", okEv, { once: true });
